@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Hub
  * Description: Central hub for generating magic login links to client sites.
- * Version: 1.1.6
+ * Version: 1.1.7
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_HUB_VERSION', '1.1.6');
+define('WC_SUPERADMIN_HUB_VERSION', '1.1.7');
 define('WC_SUPERADMIN_HUB_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_HUB_URL', plugin_dir_url(__FILE__));
 
@@ -58,7 +58,17 @@ class WC_Superadmin_Hub
 	private function __construct()
 	{
 		$this->includes();
+		$this->init_components();
 		$this->init_hooks();
+	}
+
+	/**
+	 * Initialize components
+	 */
+	private function init_components()
+	{
+		new WC_Superadmin_Hub_Dashboard();
+		new WC_Superadmin_Hub_API();
 	}
 
 	/**
@@ -85,14 +95,20 @@ class WC_Superadmin_Hub
  * Activation Hooks
  */
 register_activation_hook(__FILE__, function() {
-	require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-keys.php';
-	require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-logger.php';
-	
-	if (method_exists('WC_Superadmin_Hub_Keys', 'generate_keys_on_activation')) {
-		WC_Superadmin_Hub_Keys::generate_keys_on_activation();
-	}
-	if (method_exists('WC_Superadmin_Hub_Logger', 'create_table')) {
-		WC_Superadmin_Hub_Logger::create_table();
+	try {
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-keys.php';
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-logger.php';
+		
+		if (method_exists('WC_Superadmin_Hub_Keys', 'generate_keys_on_activation')) {
+			WC_Superadmin_Hub_Keys::generate_keys_on_activation();
+		}
+		if (method_exists('WC_Superadmin_Hub_Logger', 'create_table')) {
+			WC_Superadmin_Hub_Logger::create_table();
+		}
+	} catch (\Throwable $e) {
+		error_log('WC Superadmin Hub Activation Error: ' . $e->getMessage());
+		// Don't use wp_die here as it can cause issues during some activation flows, 
+		// but the fatal error will at least be in the log.
 	}
 });
 

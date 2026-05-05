@@ -37,5 +37,3 @@ class WC_Superadmin_Hub_API {
 		) );
 	}
 }
-
-new WC_Superadmin_Hub_API();

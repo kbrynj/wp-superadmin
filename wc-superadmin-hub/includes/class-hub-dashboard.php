@@ -188,5 +188,3 @@ class WC_Superadmin_Hub_Dashboard {
 		<?php
 	}
 }
-
-new WC_Superadmin_Hub_Dashboard();
