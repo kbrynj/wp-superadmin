@@ -18,6 +18,14 @@ class WC_Superadmin_Hub_Keys {
 	 * Generate a new RSA keypair
 	 */
 	public static function generate_and_store_keys() {
+		// Check for OpenSSL extension
+		if ( ! function_exists( 'openssl_pkey_new' ) ) {
+			add_action( 'admin_notices', function() {
+				echo '<div class="notice notice-error"><p><strong>WC Superadmin Hub Error:</strong> The PHP OpenSSL extension is not enabled on your server. This extension is required to generate secure RSA keys. Please contact your hosting provider.</p></div>';
+			} );
+			return false;
+		}
+
 		// Set up key generation parameters
 		$config = array(
 			'digest_alg'       => 'sha256',

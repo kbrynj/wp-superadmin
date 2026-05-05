@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Client
  * Description: Client plugin to accept magic login links from the central Hub.
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,17 +11,22 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.3');
+define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.4');
 define('WC_SUPERADMIN_CLIENT_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_CLIENT_URL', plugin_dir_url(__FILE__));
 
 // Plugin Update Checker
-require_once WC_SUPERADMIN_CLIENT_PATH . 'vendor/plugin-update-checker/plugin-update-checker.php';
-$wc_superadmin_client_updater = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-	'https://raw.githubusercontent.com/kbrynj/wp-superadmin/main/client-update.json',
-	__FILE__,
-	'wc-superadmin-client'
-);
+$puc_path = WC_SUPERADMIN_CLIENT_PATH . 'vendor/plugin-update-checker/plugin-update-checker.php';
+if ( file_exists( $puc_path ) ) {
+	require_once $puc_path;
+	if ( class_exists( 'YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
+		$wc_superadmin_client_updater = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+			'https://raw.githubusercontent.com/kbrynj/wp-superadmin/main/client-update.json',
+			__FILE__,
+			'wc-superadmin-client'
+		);
+	}
+}
 
 /**
  * Main WC Superadmin Client Class
