@@ -91,14 +91,13 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
     }
 
     # Zip the CONTENTS of the staging folder directly
-    # Using push/pop to ensure paths are relative to the root of the zip
-    Push-Location $stagingRoot
-    Compress-Archive -Path * -DestinationPath $zipPath -Force
-    Pop-Location
+    # We use .NET ZipFile to ensure forward slashes in the zip (important for Linux/Docker)
+    Add-Type -AssemblyName "System.IO.Compression.FileSystem"
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($stagingRoot, $zipPath)
     
     # Clean up
     Remove-Item $stagingRoot -Recurse -Force
-    Write-Host "  Zipped: $zipPath (Flattened for WP compatibility)" -ForegroundColor Cyan
+    Write-Host "  Zipped: $zipPath (.NET Zip for Linux compatibility)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
