@@ -1,0 +1,13 @@
+{
+  "name": "WC Superadmin Hub",
+  "slug": "wc-superadmin-hub",
+  "version": "1.1.0",
+  "author": "KimB",
+  "requires": "5.8",
+  "tested": "6.5",
+  "requires_php": "7.4",
+  "download_url": "https://github.com/kbrynj/wp-superadmin/raw/main/wc-superadmin-hub.zip",
+  "sections": {
+    "description": "Central hub for generating magic login links to client WooCommerce sites."
+  }
+}

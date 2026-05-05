@@ -8,3 +8,10 @@ Thumbs.db
 
 # WordPress
 *.log
+
+# Composer - vendor IS committed so it ships in the plugin zips
+# composer.lock is committed per plugin
+
+# Build temp
+puc-temp/
+puc-v*.zip
