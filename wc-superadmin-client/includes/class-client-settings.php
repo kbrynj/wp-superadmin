@@ -24,7 +24,7 @@ class WC_Superadmin_Client_Settings {
 	public function register_settings() {
 		register_setting( 'wc_superadmin_client_options', 'wc_superadmin_public_key' );
 		register_setting( 'wc_superadmin_client_options', 'wc_superadmin_hub_url', array(
-			'default'           => 'https://admindemo.kimbr.no',
+			'default'           => 'https://example.com',
 			'sanitize_callback' => 'esc_url_raw',
 		) );
 	}
@@ -42,7 +42,7 @@ class WC_Superadmin_Client_Settings {
 			return;
 		}
 
-		$hub_url = get_option( 'wc_superadmin_hub_url', 'https://admindemo.kimbr.no' );
+		$hub_url = get_option( 'wc_superadmin_hub_url', 'https://example.com' );
 
 		if ( empty( $hub_url ) ) {
 			return;
@@ -95,9 +95,9 @@ class WC_Superadmin_Client_Settings {
 							<input
 								type="url"
 								name="wc_superadmin_hub_url"
-								value="<?php echo esc_attr( get_option( 'wc_superadmin_hub_url', 'https://admindemo.kimbr.no' ) ); ?>"
+								value="<?php echo esc_attr( get_option( 'wc_superadmin_hub_url', 'https://example.com' ) ); ?>"
 								class="regular-text"
-								placeholder="https://admindemo.kimbr.no"
+								placeholder="https://example.com"
 							/>
 							<p class="description">The URL of your Central Hub WordPress site. This site will automatically register itself with the hub when you save.</p>
 						</td>

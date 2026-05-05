@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Client
  * Description: Client plugin to accept magic login links from the central Hub.
- * Version: 1.1.19
+ * Version: 1.1.20
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.19');
+define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.20');
 define('WC_SUPERADMIN_CLIENT_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_CLIENT_URL', plugin_dir_url(__FILE__));
 

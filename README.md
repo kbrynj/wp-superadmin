@@ -38,7 +38,7 @@ The system consists of two WordPress plugins:
 1.  Install and activate the `wc-superadmin-client.zip` plugin on your client's WooCommerce site.
 2.  Go to **Settings → Superadmin Client**.
 3.  Paste the **RSA Public Key** from your Hub.
-4.  Ensure the **Central Hub URL** is correct (defaults to `https://admindemo.kimbr.no`).
+4.  Ensure the **Central Hub URL** is correct (defaults to `https://example.com`).
 5.  Click **Save & Register with Hub**.
 
 ### 3. Usage
