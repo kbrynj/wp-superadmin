@@ -80,12 +80,9 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
     # Items to exclude from the zip
     $excludeNames = @('.git', '.gitignore', 'node_modules', '*.log')
 
-    # Create a temp staging folder so the zip has the right folder structure
-    $tempStage = Join-Path $env:TEMP "wc_superadmin_stage\$pluginFolderName"
-    if (Test-Path (Join-Path $env:TEMP "wc_superadmin_stage")) {
-        Remove-Item (Join-Path $env:TEMP "wc_superadmin_stage") -Recurse -Force
-    }
-    New-Item -ItemType Directory -Force -Path $tempStage | Out-Null
+    # Copy files to a clean temp folder
+    $tempStage = Join-Path $env:TEMP "wc_superadmin_build_$(Get-Random)"
+    New-Item -ItemType Directory -Path $tempStage | Out-Null
 
     # Copy files, skipping excludes
     Get-ChildItem $sourceDir | Where-Object {
@@ -94,9 +91,11 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
         Copy-Item $_.FullName -Destination $tempStage -Recurse -Force
     }
 
-    Compress-Archive -Path (Join-Path $env:TEMP "wc_superadmin_stage\*") -DestinationPath $zipPath -Force
-    Remove-Item (Join-Path $env:TEMP "wc_superadmin_stage") -Recurse -Force
-    Write-Host "  Zipped: $zipPath" -ForegroundColor Cyan
+    # Zip the CONTENTS of the temp folder directly into the zip
+    # This ensures the files are at the root of the zip (WP will auto-create the folder from zip name)
+    Compress-Archive -Path "$tempStage\*" -DestinationPath $zipPath -Force
+    Remove-Item $tempStage -Recurse -Force
+    Write-Host "  Zipped: $zipPath (Files at root)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
