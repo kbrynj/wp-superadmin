@@ -73,29 +73,31 @@ function Set-JsonVersion($jsonFile, $newVersion) {
     [System.IO.File]::WriteAllText($jsonFile, $content, $utf8NoBOM)
 }
 
-# ─── Helper: Create a zip of a plugin directory ──────────────────────────────
 function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
     if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 
     # Items to exclude from the zip
     $excludeNames = @('.git', '.gitignore', 'node_modules', '*.log')
 
-    # Copy files to a clean temp folder
-    $tempStage = Join-Path $env:TEMP "wc_superadmin_build_$(Get-Random)"
-    New-Item -ItemType Directory -Path $tempStage | Out-Null
+    # Create a unique staging directory
+    $stagingRoot = Join-Path $env:TEMP "wc_sa_$(Get-Random)"
+    $pluginStage = Join-Path $stagingRoot $pluginFolderName
+    New-Item -ItemType Directory -Path $pluginStage -Force | Out-Null
 
-    # Copy files, skipping excludes
+    # Copy files from source to staging/plugin-folder
+    # We use Copy-Item with wildcard to get contents, but we exclude dev junk
     Get-ChildItem $sourceDir | Where-Object {
         $excludeNames -notcontains $_.Name -and $_.Name -notmatch '\.log$'
     } | ForEach-Object {
-        Copy-Item $_.FullName -Destination $tempStage -Recurse -Force
+        Copy-Item $_.FullName -Destination $pluginStage -Recurse -Force
     }
 
-    # Zip the CONTENTS of the temp folder directly into the zip
-    # This ensures the files are at the root of the zip (WP will auto-create the folder from zip name)
-    Compress-Archive -Path "$tempStage\*" -DestinationPath $zipPath -Force
-    Remove-Item $tempStage -Recurse -Force
-    Write-Host "  Zipped: $zipPath (Files at root)" -ForegroundColor Cyan
+    # Zip the plugin folder (this creates a zip with the folder at the root)
+    Compress-Archive -Path $pluginStage -DestinationPath $zipPath -Force
+    
+    # Clean up
+    Remove-Item $stagingRoot -Recurse -Force
+    Write-Host "  Zipped: $zipPath (Standard WP structure)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
