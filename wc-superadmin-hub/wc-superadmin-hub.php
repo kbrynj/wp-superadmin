@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Hub
  * Description: Central hub for generating magic login links to client sites.
- * Version: 1.1.13
+ * Version: 1.1.14
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_HUB_VERSION', '1.1.13');
+define('WC_SUPERADMIN_HUB_VERSION', '1.1.14');
 define('WC_SUPERADMIN_HUB_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_HUB_URL', plugin_dir_url(__FILE__));
 
@@ -76,10 +76,25 @@ class WC_Superadmin_Hub
 	 */
 	private function includes()
 	{
-		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-keys.php';
-		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-logger.php';
-		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-dashboard.php';
-		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-api.php';
+		$files = array(
+			'includes/class-hub-keys.php',
+			'includes/class-hub-logger.php',
+			'includes/class-hub-dashboard.php',
+			'includes/class-hub-api.php',
+		);
+
+		foreach ( $files as $file ) {
+			$path = WC_SUPERADMIN_HUB_PATH . $file;
+			if ( ! file_exists( $path ) ) {
+				$dir_content = scandir( WC_SUPERADMIN_HUB_PATH );
+				$msg = "<strong>WC Superadmin Hub Diagnostic:</strong><br>";
+				$msg .= "Failed to find: <code>$file</code> at <code>$path</code><br><br>";
+				$msg .= "<strong>Directory Listing of " . WC_SUPERADMIN_HUB_PATH . ":</strong><br>";
+				$msg .= "<pre>" . print_r( $dir_content, true ) . "</pre>";
+				wp_die( $msg );
+			}
+			require_once $path;
+		}
 	}
 
 	/**
