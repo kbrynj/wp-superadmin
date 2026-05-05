@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Client
  * Description: Client plugin to accept magic login links from the central Hub.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,13 +11,14 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.0');
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+define('WC_SUPERADMIN_CLIENT_VERSION', '1.1.1');
 define('WC_SUPERADMIN_CLIENT_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_CLIENT_URL', plugin_dir_url(__FILE__));
 
 // Plugin Update Checker
 require_once WC_SUPERADMIN_CLIENT_PATH . 'vendor/plugin-update-checker/plugin-update-checker.php';
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 $wc_superadmin_client_updater = PucFactory::buildUpdateChecker(
 	'https://raw.githubusercontent.com/kbrynj/wp-superadmin/main/client-update.json',
 	__FILE__,
