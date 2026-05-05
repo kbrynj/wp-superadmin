@@ -60,14 +60,17 @@ function Version-String($v) { return "$($v.Major).$($v.Minor).$($v.Patch)" }
 function Set-FileVersion($file, $oldVersion, $newVersion) {
     $content = Get-Content $file -Raw
     $content = $content -replace [regex]::Escape($oldVersion), $newVersion
-    Set-Content $file -Value $content -NoNewline
+    $utf8NoBOM = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($file, $content, $utf8NoBOM)
 }
 
 # ─── Helper: Update version in JSON metadata file ────────────────────────────
 function Set-JsonVersion($jsonFile, $newVersion) {
     $data = Get-Content $jsonFile -Raw | ConvertFrom-Json
     $data.version = $newVersion
-    $data | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -NoNewline
+    $content = $data | ConvertTo-Json -Depth 5
+    $utf8NoBOM = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($jsonFile, $content, $utf8NoBOM)
 }
 
 # ─── Helper: Create a zip of a plugin directory ──────────────────────────────
