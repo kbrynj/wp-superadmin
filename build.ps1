@@ -85,13 +85,26 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
     Copy-Item -Path "$sourceDir\*" -Destination $stagingRoot -Recurse -Force -Exclude ".git", ".gitignore", "node_modules", "*.log"
 
     # Zip the CONTENTS of the staging folder directly
-    # Using [System.IO.Compression.ZipFile]::CreateFromDirectory zips everything INSIDE the folder
+    # We manually create entries to FORCE forward slashes (required for Linux/Docker)
+    Add-Type -AssemblyName "System.IO.Compression"
     Add-Type -AssemblyName "System.IO.Compression.FileSystem"
-    [System.IO.Compression.ZipFile]::CreateFromDirectory($stagingRoot, $zipPath)
+
+    $zip = [System.IO.Compression.ZipFile]::Open($zipPath, [System.IO.Compression.ZipArchiveMode]::Create)
+    
+    # Get all files recursively
+    $files = Get-ChildItem $stagingRoot -Recurse | Where-Object { !$_.PSIsContainer }
+    
+    foreach ($file in $files) {
+        # Calculate relative path and force forward slashes
+        $relativePath = $file.FullName.Substring($stagingRoot.Length + 1).Replace("\", "/")
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, $relativePath)
+    }
+    
+    $zip.Dispose()
     
     # Clean up
     Remove-Item $stagingRoot -Recurse -Force
-    Write-Host "  Zipped: $zipPath (Flattened + Linux compatibility)" -ForegroundColor Cyan
+    Write-Host "  Zipped: $zipPath (Forced Forward Slashes for Linux)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
