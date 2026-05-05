@@ -78,21 +78,20 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
 
     # Create a unique staging directory
     $stagingRoot = Join-Path $env:TEMP "wc_sa_$(Get-Random)"
-    $pluginStage = Join-Path $stagingRoot $pluginFolderName
-    New-Item -ItemType Directory -Path $pluginStage -Force | Out-Null
+    New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
 
-    # Copy files from source to staging/plugin-folder (preserving structure)
-    # Using -Exclude to skip dev junk
-    Copy-Item -Path "$sourceDir\*" -Destination $pluginStage -Recurse -Force -Exclude ".git", ".gitignore", "node_modules", "*.log"
+    # Copy files from source to staging (Flattened structure)
+    # We copy the CONTENTS of the source dir directly into stagingRoot
+    Copy-Item -Path "$sourceDir\*" -Destination $stagingRoot -Recurse -Force -Exclude ".git", ".gitignore", "node_modules", "*.log"
 
-    # Zip the CONTENTS of the staging folder (which is the plugin folder)
-    # We use .NET ZipFile to ensure forward slashes in the zip (important for Linux/Docker)
+    # Zip the CONTENTS of the staging folder directly
+    # Using [System.IO.Compression.ZipFile]::CreateFromDirectory zips everything INSIDE the folder
     Add-Type -AssemblyName "System.IO.Compression.FileSystem"
     [System.IO.Compression.ZipFile]::CreateFromDirectory($stagingRoot, $zipPath)
     
     # Clean up
     Remove-Item $stagingRoot -Recurse -Force
-    Write-Host "  Zipped: $zipPath (Standard structure + Linux compatibility)" -ForegroundColor Cyan
+    Write-Host "  Zipped: $zipPath (Flattened + Linux compatibility)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
