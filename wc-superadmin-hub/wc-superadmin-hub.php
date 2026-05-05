@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Hub
  * Description: Central hub for generating magic login links to client sites.
- * Version: 1.1.7
+ * Version: 1.1.8
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_HUB_VERSION', '1.1.7');
+define('WC_SUPERADMIN_HUB_VERSION', '1.1.8');
 define('WC_SUPERADMIN_HUB_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_HUB_URL', plugin_dir_url(__FILE__));
 
@@ -107,8 +107,7 @@ register_activation_hook(__FILE__, function() {
 		}
 	} catch (\Throwable $e) {
 		error_log('WC Superadmin Hub Activation Error: ' . $e->getMessage());
-		// Don't use wp_die here as it can cause issues during some activation flows, 
-		// but the fatal error will at least be in the log.
+		wp_die('<strong>WC Superadmin Hub Activation Error:</strong><br><br>' . esc_html($e->getMessage()) . '<br><br><em>Please check your server dependencies (OpenSSL) and PHP version.</em>');
 	}
 });
 
