@@ -76,28 +76,23 @@ function Set-JsonVersion($jsonFile, $newVersion) {
 function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
     if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 
-    # Items to exclude from the zip
-    $excludeNames = @('.git', '.gitignore', 'node_modules', '*.log')
-
     # Create a unique staging directory
     $stagingRoot = Join-Path $env:TEMP "wc_sa_$(Get-Random)"
-    New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
+    $pluginStage = Join-Path $stagingRoot $pluginFolderName
+    New-Item -ItemType Directory -Path $pluginStage -Force | Out-Null
 
-    # Copy files from source to staging (flattened)
-    Get-ChildItem $sourceDir | Where-Object {
-        $excludeNames -notcontains $_.Name -and $_.Name -notmatch '\.log$'
-    } | ForEach-Object {
-        Copy-Item $_.FullName -Destination $stagingRoot -Recurse -Force
-    }
+    # Copy files from source to staging/plugin-folder (preserving structure)
+    # Using -Exclude to skip dev junk
+    Copy-Item -Path "$sourceDir\*" -Destination $pluginStage -Recurse -Force -Exclude ".git", ".gitignore", "node_modules", "*.log"
 
-    # Zip the CONTENTS of the staging folder directly
+    # Zip the CONTENTS of the staging folder (which is the plugin folder)
     # We use .NET ZipFile to ensure forward slashes in the zip (important for Linux/Docker)
     Add-Type -AssemblyName "System.IO.Compression.FileSystem"
     [System.IO.Compression.ZipFile]::CreateFromDirectory($stagingRoot, $zipPath)
     
     # Clean up
     Remove-Item $stagingRoot -Recurse -Force
-    Write-Host "  Zipped: $zipPath (.NET Zip for Linux compatibility)" -ForegroundColor Cyan
+    Write-Host "  Zipped: $zipPath (Standard structure + Linux compatibility)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
