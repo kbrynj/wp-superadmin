@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Hub
  * Description: Central hub for generating magic login links to client sites.
- * Version: 1.1.5
+ * Version: 1.1.6
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,11 +11,12 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_HUB_VERSION', '1.1.5');
+define('WC_SUPERADMIN_HUB_VERSION', '1.1.6');
 define('WC_SUPERADMIN_HUB_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_HUB_URL', plugin_dir_url(__FILE__));
 
 // Plugin Update Checker
+/* Temporarily disabled to debug fatal error with private repo
 $puc_path = WC_SUPERADMIN_HUB_PATH . 'vendor/plugin-update-checker/plugin-update-checker.php';
 if ( file_exists( $puc_path ) ) {
 	require_once $puc_path;
@@ -27,6 +28,7 @@ if ( file_exists( $puc_path ) ) {
 		);
 	}
 }
+*/
 
 /**
  * Main WC Superadmin Hub Class
