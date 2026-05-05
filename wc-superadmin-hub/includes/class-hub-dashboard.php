@@ -157,7 +157,13 @@ class WC_Superadmin_Hub_Dashboard {
 				</div>
 
 				<div style="flex: 1; background: #fff; padding: 20px; border: 1px solid #ccc;">
-					<h2>Recent Access Logs</h2>
+					<h2>System Status</h2>
+					<p><strong>Version:</strong> <?php echo esc_html( WC_SUPERADMIN_HUB_VERSION ); ?></p>
+					<p><strong>Update Check:</strong></p>
+					<a href="<?php echo esc_url( admin_url( 'update-core.php?force-check=1' ) ); ?>" class="button">Force WordPress Update Check</a>
+					<p style="font-size: 11px; color: #666; margin-top: 10px;">Note: WordPress caches update checks. If a new version was just released, you may need to click "Check Again" on the next page.</p>
+
+					<h2 style="margin-top: 30px;">Recent Access Logs</h2>
 					<?php 
 					$logs = WC_Superadmin_Hub_Logger::get_logs( 10 );
 					if ( empty( $logs ) ) : ?>
