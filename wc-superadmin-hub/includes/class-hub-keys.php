@@ -30,7 +30,7 @@ class WC_Superadmin_Hub_Keys {
 		$config = array(
 			'digest_alg'       => 'sha256',
 			'private_key_bits' => 2048,
-			'private_key_type' => OPENSSL_KEYTYPE_RSA,
+			'private_key_type' => defined( 'OPENSSL_KEYTYPE_RSA' ) ? OPENSSL_KEYTYPE_RSA : 0,
 		);
 
 		// Create the private and public key
