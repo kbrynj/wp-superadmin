@@ -81,23 +81,24 @@ function Build-PluginZip($sourceDir, $zipPath, $pluginFolderName) {
 
     # Create a unique staging directory
     $stagingRoot = Join-Path $env:TEMP "wc_sa_$(Get-Random)"
-    $pluginStage = Join-Path $stagingRoot $pluginFolderName
-    New-Item -ItemType Directory -Path $pluginStage -Force | Out-Null
+    New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
 
-    # Copy files from source to staging/plugin-folder
-    # We use Copy-Item with wildcard to get contents, but we exclude dev junk
+    # Copy files from source to staging (flattened)
     Get-ChildItem $sourceDir | Where-Object {
         $excludeNames -notcontains $_.Name -and $_.Name -notmatch '\.log$'
     } | ForEach-Object {
-        Copy-Item $_.FullName -Destination $pluginStage -Recurse -Force
+        Copy-Item $_.FullName -Destination $stagingRoot -Recurse -Force
     }
 
-    # Zip the plugin folder (this creates a zip with the folder at the root)
-    Compress-Archive -Path $pluginStage -DestinationPath $zipPath -Force
+    # Zip the CONTENTS of the staging folder directly
+    # Using push/pop to ensure paths are relative to the root of the zip
+    Push-Location $stagingRoot
+    Compress-Archive -Path * -DestinationPath $zipPath -Force
+    Pop-Location
     
     # Clean up
     Remove-Item $stagingRoot -Recurse -Force
-    Write-Host "  Zipped: $zipPath (Standard WP structure)" -ForegroundColor Cyan
+    Write-Host "  Zipped: $zipPath (Flattened for WP compatibility)" -ForegroundColor Cyan
 }
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
