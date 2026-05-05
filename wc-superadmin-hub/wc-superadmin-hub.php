@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WC Superadmin Hub
  * Description: Central hub for generating magic login links to client sites.
- * Version: 1.1.15
+ * Version: 1.1.16
  * Author: KimB
  * License: GPL-2.0+
  */
@@ -11,12 +11,11 @@ if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-define('WC_SUPERADMIN_HUB_VERSION', '1.1.15');
+define('WC_SUPERADMIN_HUB_VERSION', '1.1.16');
 define('WC_SUPERADMIN_HUB_PATH', plugin_dir_path(__FILE__));
 define('WC_SUPERADMIN_HUB_URL', plugin_dir_url(__FILE__));
 
 // Plugin Update Checker
-/* Temporarily disabled to debug fatal error with private repo
 $puc_path = WC_SUPERADMIN_HUB_PATH . 'vendor/plugin-update-checker/plugin-update-checker.php';
 if ( file_exists( $puc_path ) ) {
 	require_once $puc_path;
@@ -26,9 +25,13 @@ if ( file_exists( $puc_path ) ) {
 			__FILE__,
 			'wc-superadmin-hub'
 		);
+
+		// Support for private repositories
+		if ( defined( 'WC_SUPERADMIN_GITHUB_TOKEN' ) ) {
+			$wc_superadmin_hub_updater->setAuthentication( WC_SUPERADMIN_GITHUB_TOKEN );
+		}
 	}
 }
-*/
 
 /**
  * Main WC Superadmin Hub Class
@@ -76,25 +79,10 @@ class WC_Superadmin_Hub
 	 */
 	private function includes()
 	{
-		$files = array(
-			'includes/class-hub-keys.php',
-			'includes/class-hub-logger.php',
-			'includes/class-hub-dashboard.php',
-			'includes/class-hub-api.php',
-		);
-
-		foreach ( $files as $file ) {
-			$path = WC_SUPERADMIN_HUB_PATH . $file;
-			if ( ! file_exists( $path ) ) {
-				$dir_content = scandir( WC_SUPERADMIN_HUB_PATH );
-				$msg = "<strong>WC Superadmin Hub Diagnostic:</strong><br>";
-				$msg .= "Failed to find: <code>$file</code> at <code>$path</code><br><br>";
-				$msg .= "<strong>Directory Listing of " . WC_SUPERADMIN_HUB_PATH . ":</strong><br>";
-				$msg .= "<pre>" . print_r( $dir_content, true ) . "</pre>";
-				wp_die( $msg );
-			}
-			require_once $path;
-		}
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-keys.php';
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-logger.php';
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-dashboard.php';
+		require_once WC_SUPERADMIN_HUB_PATH . 'includes/class-hub-api.php';
 	}
 
 	/**
@@ -122,7 +110,6 @@ register_activation_hook(__FILE__, function() {
 		}
 	} catch (\Throwable $e) {
 		error_log('WC Superadmin Hub Activation Error: ' . $e->getMessage());
-		wp_die('<strong>WC Superadmin Hub Activation Error:</strong><br><br>' . esc_html($e->getMessage()) . '<br><br><em>Please check your server dependencies (OpenSSL) and PHP version.</em>');
 	}
 });
 
